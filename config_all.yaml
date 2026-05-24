@@ -1,0 +1,176 @@
+# =============================================================================
+# FinancePetri — Полный конфиг со всеми моделями и тестами
+# =============================================================================
+# Копируйте в config.yaml и меняйте enabled: true/false по необходимости.
+# =============================================================================
+
+global:
+  # Список активов (один или несколько)
+  symbols: ["AAPL", "TSLA", "ACHR", "ENPH", "GFS", "INTC", "LCID", "NKE"]
+
+  # Диапазон дат
+  start_date: "2020-01-01"
+  end_date: "2024-01-01"
+
+# =============================================================================
+# Модели
+# =============================================================================
+models:
+
+  # -------------------- Baseline --------------------
+  - name: "RandomModel"
+    enabled: true
+
+  - name: "RandomVolatilityModel"
+    enabled: true
+
+  # -------------------- ARIMA --------------------
+  - name: "ArimaModel"
+    enabled: false
+    params:
+      order: [2, 0, 1]
+      suppress_warnings: true
+
+  - name: "ArimaAutoModel"
+    enabled: false
+    params:
+      max_p: 3
+      max_q: 3
+      suppress_warnings: true
+
+  # -------------------- Направление: Unconditional --------------------
+  - name: "UnconditionalModel"
+    enabled: true
+
+  - name: "UnconditionalModelV2"
+    enabled: false
+    params:
+      alpha: 0.94
+
+  - name: "UnconditionalModelV3"
+    enabled: true
+    params:
+      trend_threshold: 0.55
+      vol_threshold: 1.5
+
+  - name: "UnconditionalEnsemble"
+    enabled: true
+    params:
+      windows: [20, 60, 100]
+
+  - name: "UnconditionalRegimeSelector"
+    enabled: false
+
+  # -------------------- Направление: Logistic --------------------
+  - name: "LogisticModel"
+    enabled: false
+
+  - name: "LogisticModelV2"
+    enabled: false
+
+  # -------------------- Волатильность: Historical --------------------
+  - name: "HistoricalVolatilityModel"
+    enabled: false
+    params:
+      window: 20
+
+  - name: "HistoricalVolatilityModelV2"
+    enabled: true
+    params:
+      candidate_windows: [10, 20, 60]
+
+  # -------------------- Волатильность: Exponential --------------------
+  - name: "ExponentialVolatilityModel"
+    enabled: true
+    params:
+      alpha: 0.94
+      window: 60
+
+  # -------------------- Волатильность: GARCH --------------------
+  - name: "GARCHModel"
+    enabled: false
+    params:
+      p: 1
+      q: 1
+      mean: "constant"
+
+  - name: "GARCHAutoModel"
+    enabled: false
+    params:
+      max_p: 2
+      max_q: 2
+      mean: "constant"
+
+  # -------------------- Ансамбли --------------------
+  - name: "HybridEnsembleModel"
+    enabled: true
+
+# =============================================================================
+# Тесты
+# =============================================================================
+tests:
+
+  # -------------------- Направление --------------------
+  - name: "DirectionTest"
+    enabled: true
+    n_runs: 200
+    params:
+      train_days: 400
+      test_days: 5
+      horizon: 1
+
+  - name: "DirectionTest50"
+    enabled: false
+    n_runs: 200
+
+  - name: "DirectionTest100"
+    enabled: false
+    n_runs: 200
+
+  - name: "DirectionTest200"
+    enabled: false
+    n_runs: 200
+
+  # -------------------- Вероятности --------------------
+  - name: "ProbabilityTest"
+    enabled: true
+    n_runs: 200
+    params:
+      train_days: 400
+      test_days: 5
+      horizon: 1
+      n_bins: 10
+
+  # -------------------- Бенчмарки --------------------
+  - name: "BenchmarkTest"
+    enabled: true
+    n_runs: 200
+    params:
+      train_days: 400
+      test_days: 5
+      horizon: 1
+
+  # -------------------- Скользящее окно --------------------
+  - name: "RollingWindowTest"
+    enabled: false
+    n_runs: 200
+    params:
+      train_days: 400
+      test_days: 5
+      horizon: 1
+
+  # -------------------- Волатильность --------------------
+  - name: "VolatilityTest"
+    enabled: true
+    n_runs: 200
+    params:
+      train_days: 400
+      test_days: 5
+      horizon: 1
+
+# =============================================================================
+# Вывод
+# =============================================================================
+output:
+  show_progress: true
+  results_dir: "results"
